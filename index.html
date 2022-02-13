@@ -1,0 +1,39 @@
+<!doctype html>
+
+<head>
+	<!-- meta information, title, stylesheet, and icon -->
+	<title>Maze solver</title>
+	<meta name="description" content="Scan and solve mazes!">
+	<meta name="author" content="Noah Ostle">
+	<link rel="stylesheet" href="style.css">
+	<link rel="icon" href="maze.png">
+
+</head>
+
+<body>
+	<!-- initialize buttons as no display so that they arent visible, when the user
+		uses the system, different buttons will become visible -->
+
+	<!-- lets user upload file, only accepts png or jpg -->
+	<input type="file" id="userimage" onchange="imageConvert(event)" accept="image/x-png,image/jpeg">
+	<!-- continue with currently uploaded image -->
+	<button id="canvasbutton" onclick="createCanvas()">continue</button>
+	<!-- hidden by default, confirms user startpoint -->
+	<button id="startpointbutton" onclick="getStartPoint()" style="display:none;">set start point</button>
+	<!-- hidden by default, confirms user endpoint -->
+	<button id="endpointbutton" onclick="getEndPoint()" style="display:none;">set end point</button>
+	<!-- hidden by default, begins maze solving sequence on image user uploaded -->
+	<button id ="solvebutton" onclick="getToWall()" style="display:none;">solve!</button>
+
+
+
+	<!-- initialise canvas to draw maze on -->
+	<canvas id="userCanvas" width="0" height="0" style="border:1px solid black; display:none;"></canvas>
+
+
+
+
+
+	<script src="script.js"></script>
+</body>
+</html>
