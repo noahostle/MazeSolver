@@ -7,7 +7,8 @@ var entering = true;
 
 //imageConvert function gets all pixels in image as coordinate system 
 function imageConvert(event){
-
+	//open pop up menu
+	openPopup();
 	//makes new Image object called userImage and makes it accessible from whole window
 	window.userImage = new Image();
 	//whenever an image is loaded:
@@ -19,15 +20,55 @@ function imageConvert(event){
 		window.maxY = userImage.width;
 
 		//console.log(maxX,maxY)
+		//create canvas once image has loaded
+		createCanvas();
 	}
 
 	//uses image from user event (uploading) passed in through upload button click
 	userImage.src = URL.createObjectURL(event.target.files[0]);
-	//hides upload button
-	document.getElementById("userImage").style.display="none";
 	
 }
 
+//opens popup by setting all elements to visible using appropriate animations
+function openPopup(){
+
+	document.getElementById("popup").style.display = "inline";
+	document.getElementById("popup").style.animation = "transition 1.25s ease-in-out";
+	document.getElementById("grey").style.display = "block";
+	document.getElementById("grey").style.animation = "fade 1s ease-in-out forwards";
+
+}
+
+//closes popup by using apporpriate animations
+function closePopup(){
+	//clears user image so that if user closes popup, then uploads the same image,
+	//oninput for file upload is still triggered and popup still opens
+	//popup has to be opened on input so that the user closes the dialogue box before 
+	//the animation starts
+	document.getElementById("userimage").value=null;
+	//clear start and endpoints
+	startPoint=undefined;
+	endPoint=undefined;
+
+	document.getElementById("popup").style.animation = "transitionOut 1.25s ease-in-out forwards";
+	document.getElementById("grey").style.animation = "fadeOut 1s ease-in-out forwards";
+	//wait until animation finishes, then clear grey div so user can click through it on the main screen
+	setTimeout(function(){
+		document.getElementById("grey").style.display = "none";
+		//when user closes popup, set the text to say enter startpoint because thats what the user will have to
+		//do when they open the popup again
+		document.getElementById("instruction").textContent="Enter a starting point";
+		//set opacity of warning message to 0
+		document.getElementById("error").style.animation=null;
+		document.getElementById("error").style.opacity="0";
+		//reset the visibility of buttons
+		document.getElementById("endpointbutton").style.display="none";
+	}, 1250);
+	//when user closes popup, they might have solved maze, in which case entering would be none
+	//dont want to let user enter on the solution screen, so let them as soon as they close the popup
+	entering = true;
+
+}
 
 
 //initializes canvas to image size
@@ -42,10 +83,11 @@ function createCanvas (){
 	canvas.height = window.maxY;
 	//draw maze image onto canvas
 	context.drawImage(userImage, 0, 0);
-	window.alert("enter start point by clicking on maze")
 	//hide create canvas button, show start point button
-	document.getElementById("canvasbutton").style.display="none";
 	document.getElementById("startpointbutton").style.display="inline";
+	//set margins around canvas, if they were set before canvas was drawn, bigger canvas makes the margins
+	//dissapear
+	document.getElementById("userCanvas").style.margin="40px auto 50px auto";
 	
 
 }
@@ -55,7 +97,7 @@ function getStartPoint(){
 	//if the chosen point is on a "wall", dont let user enter it
 	context.drawImage(userImage, 0, 0);
 	if (checkWall(tempX,tempY) == "black"){
-		window.alert("please select an empty space on the maze")
+		document.getElementById("error").style.animation=("fadeMax 1s ease-in-out forwards");
 		return;
 	}
 	//draw the dot back on the canvas
@@ -65,6 +107,12 @@ function getStartPoint(){
 	//change visibility of confirmation buttons
 	document.getElementById("startpointbutton").style.display="none";
 	document.getElementById("endpointbutton").style.display="inline";
+	//make text say enter end point
+	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
+	setTimeout(function(){
+		document.getElementById("instruction").textContent="Enter an end point"
+		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
+	}, 250);
 
 }
 
@@ -89,7 +137,10 @@ function getEndPoint(){
 	context.drawImage(userImage, 0, 0);
 	if (checkWall(tempX,tempY) == "black"){
 		context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
-		window.alert("please select an empty space on the maze")
+			//if the error message is not already present, put it there
+			if (document.getElementById("error").style.animation != "fadeMax 1s ease-in-out forwards"){
+				document.getElementById("error").style.animation=("fadeMax 1s ease-in-out forwards");
+			}
 		return;
 	}
 	//draw the dots back on the canvas
@@ -101,9 +152,14 @@ function getEndPoint(){
 	document.getElementById("endpointbutton").style.display="none";
 	//console.log(startPoint,endPoint)
 	//after end point has been generated, let user click solve button
-	document.getElementById("solvebutton").style.display="inline";
 	//dont let the user click any more boxes since theyve entered all points already
 	entering="no";
+	//start loading animation
+	load();
+	//wait for loading animation to start before doing anything
+	setTimeout(function(){
+					getToWall();
+				}, 1000);
 
 }
 
@@ -347,6 +403,19 @@ function checkCorners(){
 
 }
 
+function load() {
+	document.getElementById("load").style.display = "block";
+	document.getElementById("load").style.animation = "fade 1s ease-in-out forwards";
+	document.getElementById("loadGrey").style.display = "block";
+	document.getElementById("loadGrey").style.animation = "fade 1s ease-in-out forwards";
+}
+
+
+function stopLoad(){
+	document.getElementById("load").style.animation = "fadeOut 1s ease-in-out forwards";
+	document.getElementById("loadGrey").style.animation = "fadeOut 1s ease-in-out forwards";
+}
+
 //main maze solving algorithm
 function solveMaze (x,y){
 	context.fillStyle = "#6f42f5";
@@ -397,7 +466,17 @@ function solveMaze (x,y){
 				finished = "yes";
 				//optimise solution route
 				checkCorners();
-				window.alert("solution found!");
+				//tell user maze is done
+				document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
+				setTimeout(function(){
+					document.getElementById("instruction").textContent="Solved!"
+					document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
+				}, 250);
+				//after maze is solved, reset start/endpoint so program can be run again
+				startPoint=undefined;
+				endPoint=undefined;
+				//stop loading animation
+				stopLoad();
 			}
 		}
 		//console.log([posX,posY]);

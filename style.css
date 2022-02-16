@@ -1,0 +1,208 @@
+/* all items in notch */
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+.notch > *{
+	cursor: pointer;
+	position:relative;
+	border:none;
+	background-color:transparent;
+	color:white;
+	font-weight:bold;
+	font-size:28px;
+	padding:none;
+	display:inline-block;
+	margin:0;
+	padding:0;
+}
+#tutorial {
+	padding:0 0 0 30px;
+}
+.notch {
+	background-color:#262626;
+	padding:0 15px;
+	width:auto;
+	display: inline-block;
+}
+
+.circle {
+	overflow:overlay;
+	display:inline-block;
+	height:100px;
+	width:45px;
+	border-radius:50%;
+	background-color:#262626;
+	margin:-7.088px -28px;
+}
+.notchholder {
+	position:relative;
+	width:140px;
+	margin-left:50%;
+	margin-top:-70px;
+	transform: translateX(-30%);
+}
+#label {
+	top:-2px;
+}
+.text {
+	font-family:arial;
+	color:white;
+	margin-top:30%;
+	margin-left:15px;
+}
+.heading {
+	font-size:48px;
+}
+.text {
+	font-size:24px;
+}
+@keyframes bob {
+	0% {transform: translateX(-50%) translateY(15px);}
+	50% {transform: translateX(-50%) translateY(-15px);}
+	100% {transform: translateX(-50%) translateY(15px);}
+}
+.mazeIcon {
+	opacity: 25%;
+	saturate: 0;
+	filter: contrast(0) brightness(1.75);
+	position:absolute;
+	top:100px;
+	left: 50%;
+	width: 600px;
+	height: 600px;
+	z-index: 1;
+	animation: bob 10s ease-in-out infinite;
+}
+#popup {
+	position: absolute;
+	border-radius: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	top: 6%;
+	background-color: #ebebeb;
+	z-index: 1;
+	padding: 20px;
+	width: 700px;
+	height: 600px;
+
+}
+#popup > * {
+	margin:0 auto;
+}
+@keyframes transition {
+	0% {transform:  translateY(-150%);
+		opacity: 0%}
+	60% {opacity: 100%}
+	80% {transform:  translateY(15px);}
+	100% {transform:  translateY(0px);}
+}
+@keyframes transitionOut {
+	0% {transform:  translateY(0px);}
+	20% {transform:  translateY(15px);}
+	40% {opacity: 100%}
+	100% {transform:  translateY(-150%);}
+}
+@keyframes fade {
+	0% {opacity: 0%;}
+	100% {opacity: 60%;}
+}
+@keyframes fadeMax {
+	0% {opacity: 0%;}
+	100% {opacity: 100%;}
+}
+@keyframes fadeOut {
+	0% {opacity: 60%;}
+	100% {opacity: 0%;}
+}
+@keyframes fadeOutMax {
+	0% {opacity: 100%;}
+	100% {opacity: 0%;}
+}
+.grey {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	pointer-events: none;
+}
+#closepopup {
+	border: none;
+	background: none;
+	font-size: 32px;
+	right: 15px;
+	top: 15px;
+	position: absolute;
+	color: grey;
+	font-family: 'Varela Round';
+	cursor: pointer;
+}
+#instruction {
+	font-size:48px;
+	text-align:center;
+	font-family: arial;
+	font-weight:lighter;
+	color:#8c8c8c;
+}
+.canvas{
+	border:0px solid black; 
+	display:none;
+}
+.buttons > * {
+	padding:0px 15px;
+	box-shadow: 0px 10px 14px -7px #fbb0ff;
+	background:linear-gradient(to bottom, #efadff 5%, #a3abff 100%);
+	background-color:#efadff;
+	border-radius:8px;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:20px;
+	font-weight:bold;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #3d768a;
+	display:block;
+	border: white;
+	width:130px;
+	height:30px;
+	text-align:center;
+}
+.buttons:hover > * {
+	background:linear-gradient(to bottom, #a3abff 5%, #efadff 100%);
+	background-color:#a3abff;
+}
+.buttons:active > * {
+	position:relative;
+	top:1px;
+}
+.buttons {
+	display:block;
+	width:130px;
+	margin:50% auto;
+}
+#loadGrey {
+	z-index: 998;
+}
+.load {
+	color:white;
+	font-size:28px;
+	z-index:999;
+	font-family: arial;
+	margin-top: 40%;
+	text-align:center;
+}
+#error {
+	color:#8c8c8c;
+	font-size:20px;
+	font-family: arial;
+	margin:10px;
+	text-align:center;
+}
+body {
+	background-repeat: no-repeat; 
+	background: rgb(98,0,255);
+	background: linear-gradient(219deg, rgba(98,0,255,1) 0%, rgba(211,180,247,1) 24%, rgba(49,105,239,1) 93%, rgba(0,187,255,1) 100%) fixed;
+}

@@ -11,29 +11,43 @@
 </head>
 
 <body>
-	<!-- initialize buttons as no display so that they arent visible, when the user
-		uses the system, different buttons will become visible -->
+	<div class="notchholder">
+		<div class="circle"></div>
+		<div class="notch">
+			<!-- lets user upload file, only accepts png or jpg, upload thing hidden -->
+			<input type="file" id="userimage" oninput="imageConvert(event)" accept="image/x-png,image/png,image/jpeg" style="display:none;">
+			<!-- button for upload -->
+			<label id="label" for="userimage">+</label>
+			<button id="tutorial" onclick="">?</button>
+		</div>
+		<div class="circle"></div>
+	</div>
+	<div class="text">
+		<h1 class="heading">Maze Solver</h1>
+		<p class="paragraph">Maze Solver is an open source and free<br>	program that can scan mazes and solve them for you!</p>
+	</div>
+	<img src="mazeIcon.png" class="mazeIcon">
 
-	<!-- lets user upload file, only accepts png or jpg -->
-	<input type="file" id="userimage" onchange="imageConvert(event)" accept="image/x-png,image/jpeg">
-	<!-- continue with currently uploaded image -->
-	<button id="canvasbutton" onclick="createCanvas()">continue</button>
-	<!-- hidden by default, confirms user startpoint -->
-	<button id="startpointbutton" onclick="getStartPoint()" style="display:none;">set start point</button>
-	<!-- hidden by default, confirms user endpoint -->
-	<button id="endpointbutton" onclick="getEndPoint()" style="display:none;">set end point</button>
-	<!-- hidden by default, begins maze solving sequence on image user uploaded -->
-	<button id ="solvebutton" onclick="getToWall()" style="display:none;">solve!</button>
 
 
-
+	<div id="popup" style="display:none;">
+	<h2 id="instruction">Enter a starting point</h2>
+	<p id="error" style="opacity:0;">Please select an empty point of the maze</p>
 	<!-- initialise canvas to draw maze on -->
-	<canvas id="userCanvas" width="0" height="0" style="border:1px solid black; display:none;"></canvas>
+	<canvas id="userCanvas" width="0" height="0" class="canvas"></canvas>
+	<p id="closepopup" onclick="closePopup()">x</p>
+	<div class="buttons">
+	<!-- hidden by default, confirms user startpoint -->
+	<button id="startpointbutton" onclick="getStartPoint()" style="display:none;">Continue</button>
+	<!-- hidden by default, confirms user endpoint -->
+	<button id="endpointbutton" onclick="getEndPoint()" style="display:none;">Solve</button>
+	</div>
+	<div id="loadGrey" class="grey" style="display:none;"><p id="load"class="load">Loading...</p></div>
+	</div>
 
 
 
-
-
+	<div id="grey" class="grey" style="display:none;"></div>
 	<script src="script.js"></script>
 </body>
 </html>
