@@ -295,48 +295,19 @@ function getToWall(){
 //which I can use to check if the finder pixel has line of sight from startxy to endxy,
 //and also for route optimisation
 function getPath(startx, starty, endx, endy){
-	//get canvas information
-	var data = context.getImageData(0,0,canvas.width,canvas.height).data;
-	//intialise list of pixels from startxy to endxy
-	var line = [];
+	//slope rise over run
+	slope = (starty-endy)/(startx-endx);
+	//intercept b=y-mx 
+	intercept = starty-slope*startx;
+	coords=[];
+	//for each x coordinate, determine y coordinate and add it to list to check line of sight
+	for (let x=0; x<Math.floor(endx-startx); x++){
+		//y=mx+b
+		var y = slope*x+intercept;
+		coords.push(context.getImageData(x,y,1,1).data);
 
-	//round start x and y
-	var y = Math.floor(starty);
-	var x = Math.floor(startx);
-	//round endx and y
-	var xx = Math.floor(endx);
-	var yy = Math.floor(endy);
-	//difference between end and start x
-	var dx = Math.abs(xx - x); 
-	var sx = x < xx ? 1 : -1;
-	//difference between end and start y
-	var dy = -Math.abs(yy - y);
-	var sy = y < yy ? 1 : -1;
-	var err = dx + dy;
-	var e2;
-	var end = false;
-
-	while (!end) {
-		//on every loop, add pixels in bresenham line to line array
-		line.push(context.getImageData(x, y, 1,1).data);
-		//if new xy = end xy then stop
-		if ((x === xx && y === yy)) {
-			end = true;
-		} 
-		//Bresenhams algorithm, steps through all pixels that will touch line
-		//from xy to endxy
-		else {
-			e2 = 2 * err;
-			if (e2 >= dy) {
-				err += dy;
-			x += sx;
-			}
-			if (e2 <= dx) {
-				err += dx;
-				y += sy;
-			}
-		}
 	}
+
 	//for every pixel in bresenham line from startxy to endxy,
 	var flag=true;
 	for (item in line){
@@ -377,6 +348,7 @@ function checkCorners(){
 				//so checking corners inbetween that would draw extra lines and mess up the 
 				//solution
 				window.newIndex = x;
+				console.log(x+" out of "+ solvedCorners.length);
 
 			}
 
@@ -397,6 +369,7 @@ function checkCorners(){
 		//process the maze
 		context.fillRect(endPoint[0]-3, endPoint[1]-3, 5, 5);
 		context.fillRect(startPoint[0]-3, startPoint[1]-3, 5, 5);
+
 	}
 	
 
