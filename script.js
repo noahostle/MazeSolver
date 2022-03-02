@@ -354,29 +354,34 @@ function getPath(startx, starty, endx, endy){
 //this generates a more efficient solution by connecting corners in the original solution together
 //producing a shorter path to the solution
 function checkCorners(){
-	var index=0;
+	window.index=0;
 	//console.log("corners in solution"); console.log(solvedCorners);
 	//for each row of corners in solution do:
-	while (index < window.solvedCorners.length-1){
-		//for each solution after the one being used in loop above
-		for (x=index+1; x<window.solvedCorners.length;x++){
+	while (window.index < window.solvedCorners.length-1){
+		//for each solution after the one being used in loop above, starting at end of list
+		//in order to get fastest path first
+		for (x=window.solvedCorners.length-1; x>0;x--){
 			//console.log("path: "+[window.solvedCorners[index][0], window.solvedCorners[index][1]]+"::" +[window.solvedCorners[x][0], window.solvedCorners[x][1]] +" is "+getPath(window.solvedCorners[index][0], window.solvedCorners[index][1], window.solvedCorners[x][0], window.solvedCorners[x][1]));
 			//console.log(index+" to "+x);
 
 			//see if the top loops corner has line of sight to each corner in nested loop
 			//if it does have line of sight, add it to the list.
 
-			//for each corner down the second loop, if it has line of sight, this will override corner variable
+			//for each corner from the bottom of the second loop, check if it has line of sight, then go up one
 			//this works because corners further down the list are closer to the end,
-			//since corners further up the list didnt get to the endpoint, otherwise the list 
-			//would have stopped there
+			//since corners further up the list didnt get as close to the endpoint
+
 			if (getPath(window.solvedCorners[index][0], window.solvedCorners[index][1], window.solvedCorners[x][0], window.solvedCorners[x][1]) == true){
-				var corner = window.solvedCorners[x];
-				//set a varible for the index of the top loop so it can jump to the new corner,
+				window.corner = window.solvedCorners[x];
+	
+				console.log(index+ " to "+x);
+				//set index of top loop to last drawn corner
 				//since there is a pathfrom the last corner to this one
 				//so checking corners inbetween that would draw extra lines and mess up the 
 				//solution
-				window.newIndex = x;
+				window.index = x;
+				//do not keep stepping when a good corner is found
+				break;
 
 			}
 
@@ -387,10 +392,8 @@ function checkCorners(){
 		//draw from top loop corner
 		context.moveTo(window.solvedCorners[index][0], window.solvedCorners[index][1]);
 		//to nested loop corner
-		context.lineTo(corner[0], corner[1]);
+		context.lineTo(window.corner[0], window.corner[1]);
 		context.stroke();
-		//set index of top loop to last drawn corner
-		index = window.newIndex;
 		//redraw start and endpoints on top of line
 		context.fillStyle = "#0000FF";
 		//once whole process is over, redraw start and endpoint dots as they are removed to
