@@ -2,7 +2,10 @@
 //Note: y coordinate is top down in js, so y coordincate calculations will be 
 //different from pseudocode.
 
-//allow user to enter
+
+//when the program encounters an error, close and reset everything
+window.onerror = function() { window.alert("sorry, something went wrong, please try again"); closePopup(); stopLoad(); };
+//allow user to enter points
 var entering = true;
 
 //imageConvert function gets all pixels in image as coordinate system 
@@ -48,6 +51,8 @@ function closePopup(){
 	//clear start and endpoints
 	startPoint=undefined;
 	endPoint=undefined;
+	//empty array of corners in solution
+	window.solvedCorners.length=0;
 
 	document.getElementById("popup").style.animation = "transitionOut 1.25s ease-in-out forwards";
 	document.getElementById("grey").style.animation = "fadeOut 1s ease-in-out forwards";
@@ -220,12 +225,20 @@ function turn(bearing){
 	
 	//whenever this function is run, add the corner it turned to a list of corners in the solution
 	//(for route optimisation)
+
+	//initial statements involving pushing corners are padding x,y outwards in order to make the line easier to see
+
+	//set the distance displaced from the corner to some scaling based off the size of the image.
 	var x= canvas.width/60;
+	//if the finder pixel is turning left (there is no wall ahead), move forward
+	//if the finder pixel is turning right (there is a wall ahead), move backwards
+	//in order to get away from the wall
 	if (bearing=="left"){
 		y=x;
 	} else {
 		y=-x;
 	}
+	//move away from the wall based off direction of finder pixel
 	switch(window.direction){
 		case 0: corners.push([window.posX+x,window.posY-y]); break;
 		case 90: corners.push([window.posX+y,window.posY+x]); break;
@@ -291,7 +304,6 @@ function getToWall(){
 	while (facing("forward") == "white"){
 		move();
 	}
-
 	//now that wall has been gotten, solve maze using coordinates on wall
 	solveMaze(window.posX,window.posY);
 }
@@ -362,10 +374,18 @@ function getPath(startx, starty, endx, endy){
 //producing a shorter path to the solution
 function checkCorners(){
 	var index=0;
-	console.log(window.solvedCorners);
+
+	var errorcounter=0;
+
 	//for each row of corners in solution do:
 	while (index < window.solvedCorners.length-1){
 		console.log(index + " out of " + window.solvedCorners.length);
+
+		//each time the while loop runs, add 1 to errorcounter
+		//whenever a corner is found, errorcounter is set to 0
+		//if a corner isnt found, errorcounter will exceed 1
+		errorcounter++;
+
 		//for each solution after the one being used in loop above
 		for (x=index+1; x<window.solvedCorners.length;x++){
 
@@ -384,13 +404,16 @@ function checkCorners(){
 				//solution
 				window.newIndex = x;
 
+				//if the program finds a corner, set errorcounter to 0
+				errorcounter=0;
+
 			}
 
 		}
 		//draw line between top corner and nested loop corner
 		context.beginPath();
 		context.strokeStyle = "#6f42f5";
-		context.lineWidth = '3px';
+		context.lineWidth = 2;
 		//draw from top loop corner
 		context.moveTo(window.solvedCorners[index][0], window.solvedCorners[index][1]);
 		//to nested loop corner
@@ -404,6 +427,16 @@ function checkCorners(){
 		//process the maze
 		context.fillRect(endPoint[0]-3, endPoint[1]-3, 5, 5);
 		context.fillRect(startPoint[0]-3, startPoint[1]-3, 5, 5);
+
+
+		//if errorcounter >1 ie. while loop has run twice without a solution being found in the for loop
+		//give error message 
+		if (errorcounter>1){
+			window.alert("sorry, something went wrong, please try again");
+			break;
+			break;
+			break;
+		}
 	}
 	
 
@@ -461,10 +494,13 @@ function solveMaze (x,y){
 			if (getPath(window.posX, window.posY, endPoint[0], endPoint[1]) == true){
 				//draw line to finish
 				context.beginPath();
+				context.lineWidth = 2;
 				context.strokeStyle = "#6f42f5";
 				context.moveTo(window.posX, window.posY);
 				context.lineTo(endPoint[0], endPoint[1]);
 				context.stroke();
+
+
 				console.log("solution found! optimising path");
 				//set flag to end loop
 				finished = "yes";
