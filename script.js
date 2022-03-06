@@ -217,14 +217,20 @@ var corners=[];
 //turns the finder pixel left or right depending on bearing input
 function turn(bearing){
 
+	
 	//whenever this function is run, add the corner it turned to a list of corners in the solution
 	//(for route optimisation)
 	var x= canvas.width/60;
+	if (bearing=="left"){
+		y=x;
+	} else {
+		y=-x;
+	}
 	switch(window.direction){
-		case 0: corners.push([window.posX+x,window.posY]); break;
-		case 90: corners.push([window.posX,window.posY+x]); break;
-		case 180: corners.push([window.posX-x,window.posY]); break;
-		case 270: corners.push([window.posX,window.posY-x]); break;
+		case 0: corners.push([window.posX+x,window.posY-y]); break;
+		case 90: corners.push([window.posX+y,window.posY+x]); break;
+		case 180: corners.push([window.posX-x,window.posY+y]); break;
+		case 270: corners.push([window.posX-y,window.posY-x]); break;
 	}
 	window.solvedCorners = corners;
 
