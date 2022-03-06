@@ -19,7 +19,6 @@ function imageConvert(event){
 		window.maxX = userImage.height;
 		window.maxY = userImage.width;
 
-		//console.log(maxX,maxY)
 		//create canvas once image has loaded
 		createCanvas();
 	}
@@ -150,7 +149,6 @@ function getEndPoint(){
 	window.endPoint = tempPoint;
 	//hide the button
 	document.getElementById("endpointbutton").style.display="none";
-	//console.log(startPoint,endPoint)
 	//after end point has been generated, let user click solve button
 	//dont let the user click any more boxes since theyve entered all points already
 	entering="no";
@@ -202,7 +200,6 @@ canvas.addEventListener('mousedown', function(e) {
 
 //moves finder pixel forward in its direction
 function move(){
-	//console.log("moving");
 	switch(window.direction){
 		//move one pixel depending on direction (eg. if direction 0, move upward)
 		case 0: window.posY=window.posY-1; break;
@@ -219,6 +216,18 @@ function move(){
 var corners=[];
 //turns the finder pixel left or right depending on bearing input
 function turn(bearing){
+
+	//whenever this function is run, add the corner it turned to a list of corners in the solution
+	//(for route optimisation)
+	var x= canvas.width/60;
+	switch(window.direction){
+		case 0: corners.push([window.posX+x,window.posY]); break;
+		case 90: corners.push([window.posX,window.posY+x]); break;
+		case 180: corners.push([window.posX-x,window.posY]); break;
+		case 270: corners.push([window.posX,window.posY-x]); break;
+	}
+	window.solvedCorners = corners;
+
 	//if turning left, subtract 90 degrees from direction, if else (right) add 90 degrees
 	if (bearing == "left"){
 		window.direction = window.direction - 90;
@@ -234,11 +243,6 @@ function turn(bearing){
 	if (window.direction == -90){
 		window.direction = 270;
 	}
-	//whenever this function is run, add the corner it turned to a list of corners in the solution
-	//(for route optimisation)
-	corners.push([window.posX,window.posY]);
-	//console.log("turning "+bearing+window.direction);
-	window.solvedCorners = corners;
 }
 
 
@@ -248,7 +252,6 @@ function facing(reference){
 	//(relative "ahead" pixel changes when finder pixel turns: if pixel turns to left
 	//then instead of the ahead pixel being above, it is now to the left of the pixel)
 	if (reference == "forward"){
-		//console.log("checking: " +reference)
 		switch(window.direction){
 			case 0: return checkWall(window.posX,window.posY-1); break;
 			case 90: return checkWall(window.posX+1,window.posY); break;
@@ -258,7 +261,6 @@ function facing(reference){
 	} 
 	//same thing as above, but for the left instead of ahead
 	if (reference == "left") {
-		//console.log("checking: " +reference)
 		switch(window.direction){
 			case 0: return checkWall(window.posX-1,window.posY); break;
 			case 90: return checkWall(window.posX,window.posY-1); break;
@@ -272,7 +274,6 @@ function facing(reference){
 //when the maze solver is started, the finder pixel needs to attach itself to the left wall,
 //otherwise it will spin indefinitely in 4 white pixels not touching the wall
 function getToWall(){
-	//console.log("getting to wall");
 	//clear the maze so red dots dont get in the way
 	context.drawImage(userImage, 0, 0);
 	//set finder pixel to starting point/direction
@@ -355,13 +356,12 @@ function getPath(startx, starty, endx, endy){
 //producing a shorter path to the solution
 function checkCorners(){
 	var index=0;
-	//console.log("corners in solution"); console.log(solvedCorners);
+	console.log(window.solvedCorners);
 	//for each row of corners in solution do:
 	while (index < window.solvedCorners.length-1){
+		console.log(index + " out of " + window.solvedCorners.length);
 		//for each solution after the one being used in loop above
 		for (x=index+1; x<window.solvedCorners.length;x++){
-			//console.log("path: "+[window.solvedCorners[index][0], window.solvedCorners[index][1]]+"::" +[window.solvedCorners[x][0], window.solvedCorners[x][1]] +" is "+getPath(window.solvedCorners[index][0], window.solvedCorners[index][1], window.solvedCorners[x][0], window.solvedCorners[x][1]));
-			//console.log(index+" to "+x);
 
 			//see if the top loops corner has line of sight to each corner in nested loop
 			//if it does have line of sight, add it to the list.
@@ -384,6 +384,7 @@ function checkCorners(){
 		//draw line between top corner and nested loop corner
 		context.beginPath();
 		context.strokeStyle = "#6f42f5";
+		context.lineWidth = '3px';
 		//draw from top loop corner
 		context.moveTo(window.solvedCorners[index][0], window.solvedCorners[index][1]);
 		//to nested loop corner
@@ -419,7 +420,6 @@ function stopLoad(){
 //main maze solving algorithm
 function solveMaze (x,y){
 	context.fillStyle = "#6f42f5";
-	//console.log("solving maze");
 	var i =1;
 	var finished ="no";
 	turn("right");
@@ -429,13 +429,11 @@ function solveMaze (x,y){
 		i++;
 		//if pixel to left is white, turn left and move forward
 		if (facing("left") == "white"){
-			//console.log("pixel to left is white");
 			turn("left");
 			move();
 
 		//if pixel ahead is black, turn right, but dont moce forward because right pixel hasnt been checked
 		} else if (facing("forward") == "black"){
-			//console.log("pixel ahead is black");
 			turn("right");
 		//if pixel to left is black, and pixel ahead is white, then the pixel must be following left
 		//wall, so just move forward
@@ -479,8 +477,6 @@ function solveMaze (x,y){
 				stopLoad();
 			}
 		}
-		//console.log([posX,posY]);
-		//console.log(direction);
 	}
 
 }
