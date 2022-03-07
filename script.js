@@ -4,7 +4,7 @@
 
 
 //when the program encounters an error, close and reset everything
-window.onerror = function() { window.alert("sorry, something went wrong, please try again"); closePopup(); stopLoad(); };
+window.onerror = function() { window.alert("sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame"); closePopup(); stopLoad(); };
 //allow user to enter points
 var entering = true;
 
@@ -16,11 +16,12 @@ function imageConvert(event){
 	window.userImage = new Image();
 	//whenever an image is loaded:
 	userImage.onload = function(){
-
+		//find value that multiplies with the image height to give 400
+		var scale = 400/userImage.height;
 		//gets userImage max width and height coordinates
 		//window. is here to make the variables usable outside of function
-		window.maxX = userImage.height;
-		window.maxY = userImage.width;
+		window.maxX = userImage.height*scale;
+		window.maxY = userImage.width*scale;
 
 		//create canvas once image has loaded
 		createCanvas();
@@ -86,7 +87,7 @@ function createCanvas (){
 	canvas.width = window.maxX;
 	canvas.height = window.maxY;
 	//draw maze image onto canvas
-	context.drawImage(userImage, 0, 0);
+	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
 	//hide create canvas button, show start point button
 	document.getElementById("startpointbutton").style.display="inline";
 	//set margins around canvas, if they were set before canvas was drawn, bigger canvas makes the margins
@@ -123,14 +124,15 @@ function getStartPoint(){
 function checkWall(x,y){
 	//get pixel data of input coord
 	var pixelData = context.getImageData(x, y, 1,1).data; 
-	//if pixel color is 0,0,0
-	if (pixelData[0] == 0 && pixelData[1] == 0 && pixelData[2] == 0){
+	//if pixel color is below certain threshold (dark)
+	if (pixelData[0] < 130 && pixelData[1] < 130 && pixelData[2] < 130){
 		var color = "black";
-	//if pixel color is 255,255,255
-	} else if (pixelData[0] == 255 && pixelData[1] == 255 && pixelData[2] == 255){
+	//if pixel color is above threshold (light)
+	} else if (pixelData[0] > 170 && pixelData[1] > 170 && pixelData[2] > 170){
 		var color = "white";
 	} else {
 		var color = "unknown";
+		console.log(color)
 	}
 	return color
 }
@@ -361,7 +363,7 @@ function getPath(startx, starty, endx, endy){
 	for (item in line){
 		//if any pixel is black (ie. line from startxy to endxy doesnt have line of sight) then
 		//return false
-		if (line[item][0] == 0 && line[item][1] == 0 && line[item][2] == 0){
+		if (line[item][0] <130 && line[item][1] <130 && line[item][2] <130){
 			flag = false;
 		}
 		//otherwise, flag remains true; all pixels between startxy and endxy are white,
@@ -432,7 +434,7 @@ function checkCorners(){
 		//if errorcounter >1 ie. while loop has run twice without a solution being found in the for loop
 		//give error message 
 		if (errorcounter>1){
-			window.alert("sorry, something went wrong, please try again");
+			window.alert("sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame");
 			break;
 			break;
 			break;
