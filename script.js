@@ -20,8 +20,8 @@ function imageConvert(event){
 		var scale = 400/userImage.height;
 		//gets userImage max width and height coordinates
 		//window. is here to make the variables usable outside of function
-		window.maxX = userImage.height*scale;
-		window.maxY = userImage.width*scale;
+		window.maxX = userImage.width*scale;
+		window.maxY = userImage.height*scale;
 
 		//create canvas once image has loaded
 		createCanvas();
@@ -100,7 +100,7 @@ function createCanvas (){
 function getStartPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
-	context.drawImage(userImage, 0, 0);
+	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
 	if (checkWall(tempX,tempY) == "black"){
 		document.getElementById("error").style.animation=("fadeMax 1s ease-in-out forwards");
 		return;
@@ -140,7 +140,7 @@ function checkWall(x,y){
 function getEndPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
-	context.drawImage(userImage, 0, 0);
+	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
 	if (checkWall(tempX,tempY) == "black"){
 		context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
 			//if the error message is not already present, put it there
@@ -180,7 +180,7 @@ function getCursorPosition(canvas, event) {
 	//only draw boxes if entering = True
 	if (entering==true){
 		//clear canvas and draw box on pixel user clicked
-		context.drawImage(userImage, 0 ,0);
+		context.drawImage(userImage, 0 ,0,  window.maxX, window.maxY);
 		context.fillStyle = "#0000FF";
 		context.fillRect(tempX-3, tempY-3, 5, 5);
 		//since canvas was cleared to remove the old box that wasn't submitted,
@@ -296,7 +296,7 @@ function facing(reference){
 //otherwise it will spin indefinitely in 4 white pixels not touching the wall
 function getToWall(){
 	//clear the maze so red dots dont get in the way
-	context.drawImage(userImage, 0, 0);
+	context.drawImage(userImage, 0, 0,  window.maxX, window.maxY);
 	//set finder pixel to starting point/direction
 	window.posX = window.startPoint[0];
 	window.posY = window.startPoint[1];
