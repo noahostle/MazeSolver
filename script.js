@@ -6,7 +6,7 @@
 //when the program encounters an error, close and reset everything
 window.onerror = function() { window.alert("sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame"); closePopup(); stopLoad(); };
 //allow user to enter points
-var entering = true;
+var entering = false;
 
 //imageConvert function gets all pixels in image as coordinate system 
 function imageConvert(event){
@@ -36,9 +36,14 @@ function imageConvert(event){
 function openPopup(){
 
 	document.getElementById("popup").style.display = "inline";
+	document.getElementById("error").style.display = "block";
 	document.getElementById("popup").style.animation = "transition 1.25s ease-in-out";
 	document.getElementById("grey").style.display = "block";
 	document.getElementById("grey").style.animation = "fade 1s ease-in-out forwards";
+	document.getElementById("yesno").style.display="block";
+	document.getElementById("error").style.display="block";
+	window.border=[];
+
 
 }
 
@@ -62,18 +67,16 @@ function closePopup(){
 		document.getElementById("grey").style.display = "none";
 		//when user closes popup, set the text to say enter startpoint because thats what the user will have to
 		//do when they open the popup again
-		document.getElementById("instruction").textContent="Enter a starting point";
+		document.getElementById("instruction").textContent="Draw a maze border?";
 		//set opacity of warning message to 0
 		document.getElementById("error").style.animation=null;
 		document.getElementById("error").style.opacity="0";
 		//reset the visibility of buttons
 		document.getElementById("endpointbutton").style.display="none";
 	}, 1250);
-	//when user closes popup, they might have solved maze, in which case entering would be none
-	//dont want to let user enter on the solution screen, so let them as soon as they close the popup
-	entering = true;
 
 }
+
 
 
 //initializes canvas to image size
@@ -88,8 +91,6 @@ function createCanvas (){
 	canvas.height = window.maxY;
 	//draw maze image onto canvas
 	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
-	//hide create canvas button, show start point button
-	document.getElementById("startpointbutton").style.display="inline";
 	//set margins around canvas, if they were set before canvas was drawn, bigger canvas makes the margins
 	//dissapear
 	document.getElementById("userCanvas").style.margin="40px auto 50px auto";
@@ -97,10 +98,39 @@ function createCanvas (){
 
 }
 
+function cont(){
+	//once user has either finished drawing border, or chosen not to draw border, hide buttons, show enter startpoint button
+	//and change text on instruction and error prompt
+	document.getElementById("yesno").style.display="none";
+	document.getElementById("startpointbutton").style.display="inline";
+	document.getElementById("contbutton").style.display="none";
+
+
+	document.getElementById("error").style.animation="fadeOut .25s ease-in-out forwards";
+	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
+	setTimeout(function(){
+		document.getElementById("error").textContent="Please select an empty point of the maze";
+		document.getElementById("instruction").textContent="Enter a start point"
+		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
+	}, 250);
+
+	//let user enter
+	window.borderentering=false;
+	entering=true;
+}
+
+function askBorder(){
+	window.borderentering = true;
+	document.getElementById("yesno").style.display="none";
+	document.getElementById("contbutton").style.display="block";
+}
+
 function getStartPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
 	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
+		//redraw maze border since canvas has been cleared
+		drawborder(border);
 	if (checkWall(tempX,tempY) == "black"){
 		document.getElementById("error").style.animation=("fadeMax 1s ease-in-out forwards");
 		return;
@@ -140,6 +170,8 @@ function getEndPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
 	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
+		//redraw maze border since canvas has been cleared
+		drawborder(border);
 	context.fillStyle ="#FF0000";
 	if (checkWall(tempX,tempY) == "black"){
 		context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
@@ -169,7 +201,7 @@ function getEndPoint(){
 
 }
 
-
+window.border=[]
 
 //code to see where user clicks on canvas
 function getCursorPosition(canvas, event) {
@@ -198,10 +230,22 @@ function getCursorPosition(canvas, event) {
 			context.fillStyle ="#FF0000";
 			context.fillRect(endPoint[0]-3, endPoint[1]-3, 5, 5);
 		}
+		//if there is a maze border
+		if (window.border !== []){
+				//redraw maze border since canvas has been cleared
+				drawborder(border);
+		}
 	}
 	//variable needs to be accessible by other functions, bundling as array
 	window.tempPoint = [tempX,tempY];
 	console.log("user: "+tempPoint);
+
+
+	if (window.borderentering==true){
+		//append new point to list, so that they can be redrawn after canvas resets
+		window.border.push(tempPoint);
+		drawborder(border);
+	}
 }
 
 //listens for user click on canvas
@@ -211,6 +255,27 @@ canvas.addEventListener('mousedown', function(e) {
 	getCursorPosition(canvas, e);
 })
 
+
+//draws all points in list of points, so the border can be redraw once the cavnas is reset
+//also draws lines as user clicks during the drawborder function, as this is run onclick in the getCursor position function
+function drawborder(points){
+	for (x in points){
+		if (typeof lastPoint!=="undefined"){
+			//draw from last point to new click
+			context.beginPath();
+			context.strokeStyle = "#000000";
+			context.lineWidth = 2;
+			context.moveTo(lastPoint[0], lastPoint[1]);
+			console.log([lastPoint[0], lastPoint[1]] + " to " + [points[x][0], points[x][1]]);
+			context.lineTo(points[x][0], points[x][1]);
+			context.stroke();
+		}
+		lastPoint=points[x];
+	}
+	//when the function ends, the last point should no longer exist, as when it is run again, lastpoint should = the first point
+	//not the last point of the last line
+	lastPoint="undefined";
+}
 
 //moves finder pixel forward in its direction
 function move(){
@@ -304,30 +369,13 @@ function facing(reference){
 function getToWall(){
 	//clear the maze so red dots dont get in the way
 	context.drawImage(userImage, 0, 0,  window.maxX, window.maxY);
+	//redraw maze border since canvas has been cleared
+		drawborder(border);
 	//set finder pixel to starting point/direction
 	window.posX = window.startPoint[0];
 	window.posY = window.startPoint[1];
-	//decide which direction is most likely to get to the maze
-	//if the startpoint is on the top side of the image
-	if (posY>300){
-		window.direction = 0;
-
-	}
-	//otherwise, if its at the bottom
-	else if (posY<100) {
-		window.direction = 180;
-	}
-	//if its not either at the top or the bottom (in the middle vertically)
-	else{
-		//if it is on the right side
-		if (posX>300){
-			window.direction = 270;
-		}
-		//if its on the left side, or if its none of the previous conidtions, (in center)
-		else{
-			window.direction = 90;
-		}
-	}
+	//turn left to go to left wall
+	window.direction=270;
 	//until the pixel ahead is black move forward
 	while (facing("forward") == "white"){
 		move();
