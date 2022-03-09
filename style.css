@@ -1,5 +1,6 @@
 /* all items in notch */
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
 .notch > *{
 	cursor: pointer;
 	position:relative;

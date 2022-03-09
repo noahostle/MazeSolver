@@ -53,7 +53,7 @@ function closePopup(){
 	startPoint=undefined;
 	endPoint=undefined;
 	//empty array of corners in solution
-	window.solvedCorners.length=0;
+	try { window.solvedCorners.length=0;} catch{console.log("closing popup without any start points");}
 
 	document.getElementById("popup").style.animation = "transitionOut 1.25s ease-in-out forwards";
 	document.getElementById("grey").style.animation = "fadeOut 1s ease-in-out forwards";
@@ -132,7 +132,6 @@ function checkWall(x,y){
 		var color = "white";
 	} else {
 		var color = "unknown";
-		console.log(color)
 	}
 	return color
 }
@@ -141,6 +140,7 @@ function getEndPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
 	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
+	context.fillStyle ="#FF0000";
 	if (checkWall(tempX,tempY) == "black"){
 		context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
 			//if the error message is not already present, put it there
@@ -150,8 +150,9 @@ function getEndPoint(){
 		return;
 	}
 	//draw the dots back on the canvas
-	context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
 	context.fillRect(tempPoint[0]-3, tempPoint[1]-3, 5, 5);
+	context.fillStyle ="#0000FF";
+	context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
 	//set end point to the last user click
 	window.endPoint = tempPoint;
 	//hide the button
@@ -182,13 +183,19 @@ function getCursorPosition(canvas, event) {
 		//clear canvas and draw box on pixel user clicked
 		context.drawImage(userImage, 0 ,0,  window.maxX, window.maxY);
 		context.fillStyle = "#0000FF";
+		//if the user has already entered a startpoint, they are now entering endpoint, so color should be red
+		if (typeof window.startPoint !== "undefined"){
+				context.fillStyle ="#FF0000";
+		}
 		context.fillRect(tempX-3, tempY-3, 5, 5);
 		//since canvas was cleared to remove the old box that wasn't submitted,
 		//if they exist, redraw start/endpoints
 		if (typeof window.startPoint !== "undefined"){
+				context.fillStyle ="#0000FF";
 			context.fillRect(startPoint[0]-3, startPoint[1]-3, 5, 5);
 		}
 		if (typeof window.endPoint !== "undefined"){
+			context.fillStyle ="#FF0000";
 			context.fillRect(endPoint[0]-3, endPoint[1]-3, 5, 5);
 		}
 	}
@@ -231,7 +238,7 @@ function turn(bearing){
 	//initial statements involving pushing corners are padding x,y outwards in order to make the line easier to see
 
 	//set the distance displaced from the corner to some scaling based off the size of the image.
-	var x= canvas.width/60;
+	var x=canvas.width/60;
 	//if the finder pixel is turning left (there is no wall ahead), move forward
 	//if the finder pixel is turning right (there is a wall ahead), move backwards
 	//in order to get away from the wall
@@ -300,8 +307,27 @@ function getToWall(){
 	//set finder pixel to starting point/direction
 	window.posX = window.startPoint[0];
 	window.posY = window.startPoint[1];
-	//face left to get onto the left wall
-	window.direction = 270;
+	//decide which direction is most likely to get to the maze
+	//if the startpoint is on the top side of the image
+	if (posY>300){
+		window.direction = 0;
+
+	}
+	//otherwise, if its at the bottom
+	else if (posY<100) {
+		window.direction = 180;
+	}
+	//if its not either at the top or the bottom (in the middle vertically)
+	else{
+		//if it is on the right side
+		if (posX>300){
+			window.direction = 270;
+		}
+		//if its on the left side, or if its none of the previous conidtions, (in center)
+		else{
+			window.direction = 90;
+		}
+	}
 	//until the pixel ahead is black move forward
 	while (facing("forward") == "white"){
 		move();
@@ -424,10 +450,11 @@ function checkCorners(){
 		//set index of top loop to last drawn corner
 		index = window.newIndex;
 		//redraw start and endpoints on top of line
-		context.fillStyle = "#0000FF";
+		context.fillStyle = "#FF0000";
 		//once whole process is over, redraw start and endpoint dots as they are removed to
 		//process the maze
 		context.fillRect(endPoint[0]-3, endPoint[1]-3, 5, 5);
+			context.fillStyle ="#0000FF";
 		context.fillRect(startPoint[0]-3, startPoint[1]-3, 5, 5);
 
 
