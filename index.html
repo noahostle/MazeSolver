@@ -38,11 +38,14 @@
 	<p id="closepopup" onclick="closePopup()">x</p>
 
 	<!--drawing tool-->
+	<button id="btoggle" onclick="borderToolToggle()" class="borderTool" style="display:inline-block;filter: grayscale(100%);">✏️</button>
+	<button id="bundo" onclick="undoborder()" class="borderTool undo" style="display:inline-block; filter:grayscale(100%);">↩️</button>
+	<button id="onlinehelp" onclick="togglepopup()" class="borderTool popup" style="display:inline-block;">❓</button>
+	<div id="btooltip" class="btooltip" style="opacity:0;">
+	<p>Draw extra maze walls (may help if the entrance to your maze is open and there is a blank border around your picture).</p></div>
 
 	<div class="buttons">
-		<!--<button id="startpointbutton" onclick="borderToolToggle()" class="borderTool" style="display:inline-block;filter: grayscale(100%);">✏️</button>-->
 
-		
 		<!-- hidden by default, confirms user startpoint -->
 		<button id="startpointbutton" onclick="getStartPoint()" disabled="true" style="display:inline-block;filter: grayscale(100%);">✅</button>
 		<!-- hidden by default, confirms user endpoint -->

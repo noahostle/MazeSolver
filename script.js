@@ -4,9 +4,9 @@
 
 
 //when the program encounters an error, close and reset everything
-window.onerror = function() { window.alert("sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame"); closePopup(); stopLoad(); };
+window.onerror = function() { window.alert("Sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame."); closePopup(); stopLoad(); };
 
-window.borderentering=true;
+window.borderentering=false;
 
 //imageConvert function gets all pixels in image as coordinate system 
 function imageConvert(event){
@@ -221,10 +221,12 @@ function getCursorPosition(canvas, event) {
 	//this is used to determine start and end point
 	const rect = canvas.getBoundingClientRect();
 	//when user creates a start/end point, allow them to click continue button
-	document.getElementById("endpointbutton").style.animation="greenout .5s ease-in-out forwards";
-	document.getElementById("startpointbutton").style.animation="greenout .5s ease-in-out forwards";
-	document.getElementById("endpointbutton").disabled=false;
-	document.getElementById("startpointbutton").disabled=false;
+	if (window.borderentering !== true){
+		document.getElementById("endpointbutton").style.animation="greenout .5s ease-in-out forwards";
+		document.getElementById("startpointbutton").style.animation="greenout .5s ease-in-out forwards";
+		document.getElementById("endpointbutton").disabled=false;
+		document.getElementById("startpointbutton").disabled=false;
+	}
 
 	window.tempX = event.clientX - rect.left;
 	window.tempY = event.clientY - rect.top;
@@ -273,7 +275,47 @@ canvas.addEventListener('mousedown', function(e) {
 	getCursorPosition(canvas, e);
 })
 
+//clear the canvas, remove the last two points (each end of one line), and then redraw the remaining lines
+function undoborder(){
+	context.drawImage(userImage, 0 ,0,  window.maxX, window.maxY);
+	//if there is an odd amount of things, do the stuff, otherwise you need to remove two
+	if (window.border.length%2==0){
+		window.border.splice(window.border.length - 2, 2);
+	}
+	else{
+		window.border.splice(window.border.length - 1, 1);
+	}
+	drawborder(window.border);
 
+}
+
+//toggle online help for border tool
+function togglepopup(){
+	if (document.getElementById("btooltip").style.animation=="0.5s ease-in-out 0s 1 normal forwards running fadeMax"){
+		document.getElementById("btooltip").style.animation="fadeOutMax .5s ease-in-out forwards";
+	}
+	else {
+		document.getElementById("btooltip").style.animation="fadeMax .5s ease-in-out forwards";
+	}
+}
+
+//toggle the users ability to draw a border
+function borderToolToggle(){
+	if (window.borderentering == false){
+		window.borderentering = true;
+		window.entering = false;
+		//toggle button colors
+		document.getElementById("btoggle").style.animation="greenout .5s ease-in-out forwards";
+		document.getElementById("bundo").style.animation="greenout .5s ease-in-out forwards";
+	}
+	else{
+		window.borderentering = false;
+		window.entering = true; 
+		//toggle button colors
+		document.getElementById("btoggle").style.animation="greyout .5s ease-in-out forwards";
+		document.getElementById("bundo").style.animation="greyout .5s ease-in-out forwards";
+	}
+}
 //draws all points in list of points, so the border can be redraw once the cavnas is reset
 //also draws lines as user clicks during the drawborder function, as this is run onclick in the getCursor position function
 function drawborder(points){

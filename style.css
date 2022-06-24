@@ -192,24 +192,53 @@
 	text-align:center;
 	background:transparent;
 }
-.bordertool {
+.borderTool {
 	top:200px;
-	padding-left:330px;
-	font-size:32px;
+	left:610px;
+	font-size:28px;
 	position:absolute;
 	cursor:pointer;
 	font-family:Arial;
 	text-shadow:0px 1px 0px #3d768a;
 	display:block;
 	border: none;
-	width:130px;
+	width:30px;
 	height:30px;
 	text-align:center;
 	background:transparent;
+	filter:drop-shadow(1px 1px 1px);
 }
 .borderTool:active {
 	position:absolute;
 	top:202px;
+}
+.undo {
+	position:absolute;
+	left:660px;
+
+}
+.popup {
+	position: absolute;
+	left:635px;
+	top:260px;
+}
+.popup:active {
+	position:absolute;
+	top:262px;
+}
+.btooltip {
+	background: rgb(50,50,50);
+	opacity:80%;
+	border-color:none;
+	border-radius:10px;
+	text-align:center;
+	width:250px;
+	font-family:arial;
+	color:white;
+	padding:2px 15px;
+	position:absolute;
+	top:320px;
+	left:515px;
 }
 .buttons:active > * {
 	position:absolute;
