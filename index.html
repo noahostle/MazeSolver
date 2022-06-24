@@ -26,31 +26,27 @@
 		<p class="paragraph">Maze Solver is an open source and free<br>	program that can scan mazes and solve them for you!</p>
 	</div>
 	<img src="mazeIcon.png" class="mazeIcon">
+	<img src="cog.png" class="spincog">
 
 
 
 	<div id="popup" style="display:none;">
-	<h2 id="instruction">Draw a maze border?</h2>
-	<p id="error" style="opacity:1;">This may help if your maze has open entrances/exits. Otherwise, select no.</p>
+	<h2 id="instruction">Enter a start point</h2>
+	<p id="error" style="opacity:0%;">Please enter a start/end point not on a maze wall.</p>
 	<!-- initialise canvas to draw maze on -->
 	<canvas id="userCanvas" width="0" height="0" class="canvas"></canvas>
 	<p id="closepopup" onclick="closePopup()">x</p>
 
-	<div id="yesno" class="yesno">
-				<!-- yes/no ask for border buttons -->
-		<button id="yes" onclick="askBorder()" style="display:inline-block;">Yes</button>
-		<button id="no" onclick="cont()" style="display:inline-block;">No</button>
-	</div>
+	<!--drawing tool-->
 
 	<div class="buttons">
+		<!--<button id="startpointbutton" onclick="borderToolToggle()" class="borderTool" style="display:inline-block;filter: grayscale(100%);">✏️</button>-->
 
-
-		<!-- hidden by default, if shown, confirms users maze border -->
-		<button id="contbutton" onclick="cont()" style="display:none;">Draw</button>
+		
 		<!-- hidden by default, confirms user startpoint -->
-		<button id="startpointbutton" onclick="getStartPoint()" style="display:none;">Continue</button>
+		<button id="startpointbutton" onclick="getStartPoint()" disabled="true" style="display:inline-block;filter: grayscale(100%);">✅</button>
 		<!-- hidden by default, confirms user endpoint -->
-		<button id="endpointbutton" onclick="getEndPoint()" style="display:none;">Solve</button>
+		<button id="endpointbutton" onclick="getEndPoint()" disabled="true" style="display:none;filter: grayscale(100%);">✅</button>
 	</div>
 	
 	<div id="loadGrey" class="grey" style="display:none;"><p id="load"class="load">Loading...</p></div>

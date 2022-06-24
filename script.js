@@ -5,8 +5,8 @@
 
 //when the program encounters an error, close and reset everything
 window.onerror = function() { window.alert("sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame"); closePopup(); stopLoad(); };
-//allow user to enter points
-var entering = false;
+
+window.borderentering=true;
 
 //imageConvert function gets all pixels in image as coordinate system 
 function imageConvert(event){
@@ -40,9 +40,12 @@ function openPopup(){
 	document.getElementById("popup").style.animation = "transition 1.25s ease-in-out";
 	document.getElementById("grey").style.display = "block";
 	document.getElementById("grey").style.animation = "fade 1s ease-in-out forwards";
-	document.getElementById("yesno").style.display="block";
+	document.getElementById("startpointbutton").style.display="block";
 	document.getElementById("error").style.display="block";
+	//reset border (user lines)
 	window.border=[];
+	//allow user to enter points
+	window.entering=true;
 
 
 }
@@ -67,13 +70,19 @@ function closePopup(){
 		document.getElementById("grey").style.display = "none";
 		//when user closes popup, set the text to say enter startpoint because thats what the user will have to
 		//do when they open the popup again
-		document.getElementById("instruction").textContent="Draw a maze border?";
+		document.getElementById("instruction").textContent="Enter a start point";
 		//set opacity of warning message to 0
 		document.getElementById("error").style.animation=null;
 		document.getElementById("error").style.opacity="0";
 		//reset the visibility of buttons
 		document.getElementById("endpointbutton").style.display="none";
 	}, 1250);
+
+	//redisable continue buttons until user puts in start/end point
+	document.getElementById("endpointbutton").disabled=true;
+	document.getElementById("startpointbutton").disabled=true;
+	document.getElementById("endpointbutton").style.animation="greyout .5s ease-in-out forwards";
+	document.getElementById("startpointbutton").style.animation="greyout .5s ease-in-out forwards";
 
 }
 
@@ -119,7 +128,7 @@ function cont(){
 	entering=true;
 }
 
-function askBorder(){
+function drawtool(){
 	window.borderentering = true;
 	document.getElementById("yesno").style.display="none";
 	document.getElementById("contbutton").style.display="block";
@@ -142,12 +151,15 @@ function getStartPoint(){
 	//change visibility of confirmation buttons
 	document.getElementById("startpointbutton").style.display="none";
 	document.getElementById("endpointbutton").style.display="inline";
-	//make text say enter end point
+
+	//make text say enter end point and grey out continue button
+	document.getElementById("endpointbutton").style.animation="greyout .5s ease-in-out forwards";
 	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
 	setTimeout(function(){
 		document.getElementById("instruction").textContent="Enter an end point"
 		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
 	}, 250);
+
 
 }
 
@@ -170,8 +182,8 @@ function getEndPoint(){
 	//clear the canvas so the if statement doesnt check the red dot
 	//if the chosen point is on a "wall", dont let user enter it
 	context.drawImage(userImage, 0, 0, window.maxX, window.maxY);
-		//redraw maze border since canvas has been cleared
-		drawborder(border);
+	//redraw maze border since canvas has been cleared
+	drawborder(border);
 	context.fillStyle ="#FF0000";
 	if (checkWall(tempX,tempY) == "black"){
 		context.fillRect(window.startPoint[0]-3, window.startPoint[1]-3, 5, 5);
@@ -208,6 +220,12 @@ function getCursorPosition(canvas, event) {
 	//translates location of event from event to coordinate
 	//this is used to determine start and end point
 	const rect = canvas.getBoundingClientRect();
+	//when user creates a start/end point, allow them to click continue button
+	document.getElementById("endpointbutton").style.animation="greenout .5s ease-in-out forwards";
+	document.getElementById("startpointbutton").style.animation="greenout .5s ease-in-out forwards";
+	document.getElementById("endpointbutton").disabled=false;
+	document.getElementById("startpointbutton").disabled=false;
+
 	window.tempX = event.clientX - rect.left;
 	window.tempY = event.clientY - rect.top;
 	//only draw boxes if entering = True
@@ -261,14 +279,16 @@ canvas.addEventListener('mousedown', function(e) {
 function drawborder(points){
 	for (x in points){
 		if (typeof lastPoint!=="undefined"){
-			//draw from last point to new click
-			context.beginPath();
-			context.strokeStyle = "#000000";
-			context.lineWidth = 2;
-			context.moveTo(lastPoint[0], lastPoint[1]);
-			console.log([lastPoint[0], lastPoint[1]] + " to " + [points[x][0], points[x][1]]);
-			context.lineTo(points[x][0], points[x][1]);
-			context.stroke();
+			//draw between every two clicks
+			if (x%2!==0){
+				context.beginPath();
+				context.strokeStyle = "#000000";
+				context.lineWidth = 3;
+				context.moveTo(lastPoint[0], lastPoint[1]);
+				console.log([lastPoint[0], lastPoint[1]] + " to " + [points[x][0], points[x][1]]);
+				context.lineTo(points[x][0], points[x][1]);
+				context.stroke();
+			}
 		}
 		lastPoint=points[x];
 	}
@@ -589,6 +609,10 @@ function solveMaze (x,y){
 					document.getElementById("instruction").textContent="Solved!"
 					document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
 				}, 250);
+				//fadeout error message
+				if (document.getElementById("error").style.animation != "fadeMax 1s ease-in-out forwards"){
+					document.getElementById("error").style.animation=("fadeOut 1s ease-in-out forwards");
+				}
 				//after maze is solved, reset start/endpoint so program can be run again
 				startPoint=undefined;
 				endPoint=undefined;
