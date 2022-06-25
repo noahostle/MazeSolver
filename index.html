@@ -51,6 +51,13 @@
 		<!-- hidden by default, confirms user endpoint -->
 		<button id="endpointbutton" onclick="getEndPoint()" disabled="true" style="display:none;filter: grayscale(100%);">✅</button>
 	</div>
+
+		<div id="yesno" style="opacity:0; display:none;">
+			<p id="question">Did we solve your maze correctly?</p>
+			<button id="yes" onclick="closePopup()" class="borderTool">✅</button>
+			<button id="no" onclick="bordertoolprompt()" class="borderTool">❌</button>
+		</div>
+
 	
 	<div id="loadGrey" class="grey" style="display:none;"><p id="load"class="load">Loading...</p></div>
 	</div>

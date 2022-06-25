@@ -2,7 +2,6 @@
 //Note: y coordinate is top down in js, so y coordincate calculations will be 
 //different from pseudocode.
 
-
 //when the program encounters an error, close and reset everything
 window.onerror = function() { window.alert("Sorry, something went wrong, please try again. Try to make sure the image isn't blurry and that the whole maze is in frame."); closePopup(); stopLoad(); };
 
@@ -83,6 +82,9 @@ function closePopup(){
 	document.getElementById("startpointbutton").disabled=true;
 	document.getElementById("endpointbutton").style.animation="greyout .5s ease-in-out forwards";
 	document.getElementById("startpointbutton").style.animation="greyout .5s ease-in-out forwards";
+	//hide asking if the maze finished completely
+	document.getElementById("yesno").style.animation = "fadeMaxOut .5s ease-in-out forwards"
+	document.getElementById("yesno").style.display = "none";
 
 }
 
@@ -107,26 +109,7 @@ function createCanvas (){
 
 }
 
-function cont(){
-	//once user has either finished drawing border, or chosen not to draw border, hide buttons, show enter startpoint button
-	//and change text on instruction and error prompt
-	document.getElementById("yesno").style.display="none";
-	document.getElementById("startpointbutton").style.display="inline";
-	document.getElementById("contbutton").style.display="none";
 
-
-	document.getElementById("error").style.animation="fadeOut .25s ease-in-out forwards";
-	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
-	setTimeout(function(){
-		document.getElementById("error").textContent="Please select an empty point of the maze";
-		document.getElementById("instruction").textContent="Enter a start point"
-		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
-	}, 250);
-
-	//let user enter
-	window.borderentering=false;
-	entering=true;
-}
 
 function drawtool(){
 	window.borderentering = true;
@@ -156,7 +139,7 @@ function getStartPoint(){
 	document.getElementById("endpointbutton").style.animation="greyout .5s ease-in-out forwards";
 	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
 	setTimeout(function(){
-		document.getElementById("instruction").textContent="Enter an end point"
+		document.getElementById("instruction").textContent="Enter an end point";
 		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
 	}, 250);
 
@@ -338,6 +321,38 @@ function drawborder(points){
 	//not the last point of the last line
 	lastPoint="undefined";
 }
+
+function bordertoolprompt(){
+	
+
+	//bring user back to entering startpoints (and reset required variables)
+	try{window.solvedCorners.length=0;}catch{console.log("spinning up");}
+	startPoint=undefined;
+	endPoint=undefined;
+	context.drawImage(userImage, 0, 0,  window.maxX, window.maxY);
+
+	//make text say use the border tool
+	document.getElementById("yesno").style.animation="fadeOut .25s ease-in-out forwards";
+	document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
+
+	document.getElementById("startpointbutton").disabled=false;
+	document.getElementById("startpointbutton").style.display="block";
+	document.getElementById("startpointbutton").style.filter="grayscale(100%);";
+	document.getElementById("startpointbutton").style.animation="fadeMax .5s ease-in-out forwards";
+
+
+	setTimeout(function(){
+		document.getElementById("instruction").textContent="Use the border tool, then enter a startpoint";
+		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
+	}, 250);
+	document.getElementById("yesno").style.display="none";document.getElementById("yesno").style.display="none";
+	borderToolToggle();
+	togglepopup();
+
+
+
+}
+
 
 //moves finder pixel forward in its direction
 function move(){
@@ -645,14 +660,16 @@ function solveMaze (x,y){
 				finished = "yes";
 				//optimise solution route
 				checkCorners();
-				//tell user maze is done
+				//tell user maze is done and ask if the maze was solved correctly
 				document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
+				document.getElementById("yesno").style.animation = "fadeMax .5s ease-in-out forwards";
+				document.getElementById("yesno").style.display = "block";
 				setTimeout(function(){
 					document.getElementById("instruction").textContent="Solved!"
 					document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
 				}, 250);
 				//fadeout error message
-				if (document.getElementById("error").style.animation != "fadeMax 1s ease-in-out forwards"){
+				if (document.getElementById("error").style.animation != '1s ease-in-out 0s 1 normal forwards running fadeMax'){
 					document.getElementById("error").style.animation=("fadeOut 1s ease-in-out forwards");
 				}
 				//after maze is solved, reset start/endpoint so program can be run again

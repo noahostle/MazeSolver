@@ -240,6 +240,37 @@
 	top:320px;
 	left:515px;
 }
+#question {
+	font-size:20px;
+	position:relative;
+	text-align:center;
+	font-family:arial;
+	text-shadow:1px 1px 1px;
+	color: rgb(36,36,36);
+}
+#yesno {
+	width: auto;
+	position:relative;
+	top:-40px;
+}
+#yes {
+	position:absolute;
+	top:25px;
+	left:305px;
+}
+#yes:active {
+	position:absolute;
+	top:27px;
+}
+#no:active {
+	position:absolute;
+	top:27px;
+}
+#no {
+	position:absolute;
+	top:25px;
+	left:355px;
+}
 .buttons:active > * {
 	position:absolute;
 	top:572px;
