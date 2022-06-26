@@ -663,6 +663,7 @@ function solveMaze (x,y){
 				//set flag to end loop
 				finished = "yes";
 				//optimise solution route
+				window.corners.push([window.posX, window.posY]);
 				checkCorners();
 				//tell user maze is done and ask if the maze was solved correctly
 				document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
