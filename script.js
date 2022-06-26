@@ -342,7 +342,7 @@ function bordertoolprompt(){
 
 
 	setTimeout(function(){
-		document.getElementById("instruction").textContent="Use the border tool, then enter a startpoint";
+		document.getElementById("instruction").textContent="Use the border tool";
 		document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";
 	}, 250);
 	document.getElementById("yesno").style.display="none";document.getElementById("yesno").style.display="none";
@@ -529,7 +529,7 @@ function checkCorners(){
 	var index=0;
 
 	var errorcounter=0;
-
+	console.log(window.solvedCorners);
 	//for each row of corners in solution do:
 	while (index < window.solvedCorners.length-1){
 		console.log(index + " out of " + window.solvedCorners.length);
@@ -565,11 +565,12 @@ function checkCorners(){
 		}
 		//draw line between top corner and nested loop corner
 		context.beginPath();
-		context.strokeStyle = "#6f42f5";
+		context.strokeStyle = "#231bbf";
 		context.lineWidth = 2;
 		//draw from top loop corner
 		context.moveTo(window.solvedCorners[index][0], window.solvedCorners[index][1]);
 		//to nested loop corner
+		console.log([solvedCorners[index], "to", corner]);
 		context.lineTo(corner[0], corner[1]);
 		context.stroke();
 		//set index of top loop to last drawn corner
@@ -582,6 +583,8 @@ function checkCorners(){
 			context.fillStyle ="#0000FF";
 		context.fillRect(startPoint[0]-3, startPoint[1]-3, 5, 5);
 
+		lastcorner = corner
+
 
 		//if errorcounter >1 ie. while loop has run twice without a solution being found in the for loop
 		//give error message 
@@ -592,6 +595,15 @@ function checkCorners(){
 			break;
 		}
 	}
+
+	//draw from last corner to endpoint
+	context.beginPath();
+	context.strokeStyle = "#231bbf";
+	context.lineWidth = 2;
+	context.moveTo(corner[0], corner[1]);
+
+	context.lineTo(window.endPoint[0], window.endPoint[1]);
+	context.stroke();
 	
 
 
@@ -646,14 +658,6 @@ function solveMaze (x,y){
 			//checks finder pixels current location as startxy, and the endpoint as endxy
 			//if bresenham line from finer pixel to maze exit has no black in it (no walls)
 			if (getPath(window.posX, window.posY, endPoint[0], endPoint[1]) == true){
-				//draw line to finish
-				context.beginPath();
-				context.lineWidth = 2;
-				context.strokeStyle = "#6f42f5";
-				context.moveTo(window.posX, window.posY);
-				context.lineTo(endPoint[0], endPoint[1]);
-				context.stroke();
-
 
 				console.log("solution found! optimising path");
 				//set flag to end loop
