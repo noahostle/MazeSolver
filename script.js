@@ -49,6 +49,15 @@ function openPopup(){
 
 }
 
+function exportsolution(){
+	canvas.toDataURL('image/png')
+	const link = document.createElement('a');
+	link.download = 'solution.png';
+	link.href = canvas.toDataURL();
+	link.click();
+	link.delete;
+}
+
 //closes popup by using apporpriate animations
 function closePopup(){
 	//clears user image so that if user closes popup, then uploads the same image,
@@ -56,6 +65,7 @@ function closePopup(){
 	//popup has to be opened on input so that the user closes the dialogue box before 
 	//the animation starts
 	document.getElementById("userimage").value=null;
+	document.getElementById("exportsolution").style.animation="fadeMax .25s ease-in-out forwards";
 	//clear start and endpoints
 	startPoint=undefined;
 	endPoint=undefined;
@@ -669,6 +679,7 @@ function solveMaze (x,y){
 				document.getElementById("instruction").style.animation="fadeOut .25s ease-in-out forwards";
 				document.getElementById("yesno").style.animation = "fadeMax .5s ease-in-out forwards";
 				document.getElementById("yesno").style.display = "block";
+				document.getElementById("exportsolution").style.animation="fadeMax .25s ease-in-out forwards";
 				setTimeout(function(){
 					document.getElementById("instruction").textContent="Solved!"
 					document.getElementById("instruction").style.animation="fade .25s ease-in-out forwards";

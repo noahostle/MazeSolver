@@ -23,7 +23,6 @@
 	width:auto;
 	display: inline-block;
 }
-
 .circle {
 	overflow:overlay;
 	display:inline-block;
@@ -239,6 +238,15 @@
 	position:absolute;
 	top:320px;
 	left:515px;
+}
+.export{
+	position:absolute;
+	top:450px;
+	left:635px;	
+}
+.export:active{
+	position:absolute;
+	top:452px;
 }
 #question {
 	font-size:20px;

@@ -41,6 +41,13 @@
 	<button id="btoggle" onclick="borderToolToggle()" class="borderTool" style="display:inline-block;filter: grayscale(100%);">✏️</button>
 	<button id="bundo" onclick="undoborder()" class="borderTool undo" style="display:inline-block; filter:grayscale(100%);">↩️</button>
 	<button id="onlinehelp" onclick="togglepopup()" class="borderTool popup" style="display:inline-block;">❓</button>
+	<div id="print" style="opacity:0;">
+		<button id="exportsolution" onclick="exportsolution()" class="borderTool export">📤</button>
+		<!--<select name="filetype" id="filetype" class="filetype">
+			<option value="png">Png</option>
+			<option value="jpg">Jpg</option>
+		</select>-->
+	</div>
 	<div id="btooltip" class="btooltip" style="opacity:0;">
 	<p>Draw extra maze walls (may help if the entrance to your maze is open and there is a blank border around your picture).</p></div>
 
