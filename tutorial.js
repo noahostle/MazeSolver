@@ -44,7 +44,7 @@ function steptwo(){
 }
 
 function stepthree(){
-	transition("no","Step 3. Entering your points <br><br> The first point you will have to enter is the start point. Click on the image at the entrance to the maze, and a blue dot should appear wherever you click. This is your start point and you can move it around as much as youd want before continuing. Repeat this process with the red end point dot, and then click the green tick to begin solving the maze. Solving can take a couple of seconds for mid sized ranges and if you have a really complex image, up to a minute.","150px","30px");
+	transition("no","Step 3. Entering your points <br><br> The first point you will have to enter is the start point. Click on the image at the entrance to the maze, and a blue dot should appear wherever you click. This is your start point and you can move it around as much as you want before continuing. Place your point then click the green tick button. Repeat this process with the red dot for the endpoint, and then click the green tick again to begin solving the maze. Solving can take a couple of seconds for mid sized ranges and if you have a really complex image, up to a minute.","150px","30px");
 	tut.onclick="";
 }
 
