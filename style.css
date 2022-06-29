@@ -225,6 +225,9 @@
 	position:absolute;
 	top:262px;
 }
+p.tut:hover {
+	cursor:pointer;
+}
 .btooltip {
 	background: rgb(50,50,50);
 	opacity:80%;
@@ -238,6 +241,8 @@
 	position:absolute;
 	top:320px;
 	left:515px;
+	z-index: 500;
+	
 }
 .export{
 	position:absolute;

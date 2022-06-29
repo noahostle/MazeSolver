@@ -28,6 +28,13 @@ function imageConvert(event){
 
 	//uses image from user event (uploading) passed in through upload button click
 	userImage.src = URL.createObjectURL(event.target.files[0]);
+
+
+
+	//if the user has the tutorial open, advance to next stage
+	if (document.getElementById("tuttext").style.animation=='0.25s ease-in-out 0s 1 normal forwards running fadeMax'){
+		steptwo();
+	}
 	
 }
 
@@ -65,7 +72,7 @@ function closePopup(){
 	//popup has to be opened on input so that the user closes the dialogue box before 
 	//the animation starts
 	document.getElementById("userimage").value=null;
-	document.getElementById("print").style.animation="fadeMax .25s ease-in-out forwards";
+	document.getElementById("print").style.animation="fadeMaxOut .25s ease-in-out forwards";
 	//clear start and endpoints
 	startPoint=undefined;
 	endPoint=undefined;
@@ -281,6 +288,8 @@ function undoborder(){
 	drawborder(window.border);
 
 }
+
+
 
 //toggle online help for border tool
 function togglepopup(){
@@ -673,6 +682,14 @@ function solveMaze (x,y){
 				//set flag to end loop
 				finished = "yes";
 				//optimise solution route
+
+
+				//if the user has the tutorial open, advance to next stage
+				if (document.getElementById("tuttext").style.animation=='0.25s ease-in-out 0s 1 normal forwards running fadeMax'){
+					stepfour();
+				}
+
+
 				window.corners.push([window.posX, window.posY]);
 				checkCorners();
 				//tell user maze is done and ask if the maze was solved correctly

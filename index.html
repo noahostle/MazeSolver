@@ -17,7 +17,7 @@
 			<input type="file" id="userimage" oninput="imageConvert(event)" accept="image/x-png,image/png,image/jpeg" style="display:none;">
 			<!-- button for upload -->
 			<label id="label" for="userimage">+</label>
-			<button id="tutorial" onclick="">?</button>
+			<button id="tutorial" onclick="tutorial()">?</button>
 		</div>
 		<div class="circle"></div>
 	</div>
@@ -29,6 +29,8 @@
 	<img src="cog.png" class="spincog">
 
 
+	<!--text that help wizard uses, it replaces text and moves the box around during the tutorial-->
+	<p id="tuttext" class="btooltip tut" style="opacity:0;">placeholder</p>
 
 	<div id="popup" style="display:none;">
 	<h2 id="instruction">Enter a start point</h2>
@@ -73,5 +75,6 @@
 
 	<div id="grey" class="grey" style="display:none;"></div>
 	<script src="script.js"></script>
+	<script src="tutorial.js"></script>
 </body>
 </html>
