@@ -207,6 +207,8 @@ function getEndPoint(){
 	//start loading animation
 	load();
 	//wait for loading animation to start before doing anything
+		//loading cursor
+	document.body.style.cursor="wait";
 	setTimeout(function(){
 					getToWall();
 				}, 1000);
@@ -648,6 +650,9 @@ function solveMaze (x,y){
 	var finished ="no";
 	turn("right");
 
+	//loading cursor
+	document.body.style.cursor="default";
+
 	//loop solve maze algorithm until finder pixel is at the endpoint
 	while (finished!=="yes") {
 		i++;
@@ -710,6 +715,8 @@ function solveMaze (x,y){
 				endPoint=undefined;
 				//stop loading animation
 				stopLoad();
+
+				document.body.style.cursor="default";
 			}
 		}
 	}
