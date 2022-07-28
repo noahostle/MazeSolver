@@ -232,6 +232,7 @@ function getCursorPosition(canvas, event) {
 
 	window.tempX = event.clientX - rect.left;
 	window.tempY = event.clientY - rect.top;
+
 	//only draw boxes if entering = True
 	if (entering==true){
 		//clear canvas and draw box on pixel user clicked
@@ -275,6 +276,8 @@ const canvas = document.querySelector('canvas')
 //when mouse click happens, run the cursor position function at event e
 canvas.addEventListener('mousedown', function(e) {
 	getCursorPosition(canvas, e);
+	console.log("SIMULATE:::::")
+	console.log(e)
 })
 
 //clear the canvas, remove the last two points (each end of one line), and then redraw the remaining lines
@@ -722,3 +725,91 @@ function solveMaze (x,y){
 	}
 
 }
+
+
+function wait(time){
+	setTimeout(() => {  console.log(); }, time*1000);
+}
+
+function click(x,y){
+
+	w=canvas.offsetLeft+document.getElementById("popup").offsetLeft;
+	h=canvas.offsetTop+document.getElementById("popup").offsetTop;
+
+
+	getCursorPosition(document.querySelector('canvas') ,
+		new MouseEvent(
+			"click",
+				{
+					clientX: w+canvas.width*(x+100)/200,
+					clientY: h+canvas.height*(y+100)/200,
+					bubbles: true
+				}
+			)
+		);
+}
+
+
+function driver(){
+	l=window.borderentering;
+	window.borderentering=true;
+
+	spiral();
+
+	
+
+
+
+	window.borderentering=l;
+}
+
+function spiral(){
+
+	x=0
+	ar=[]
+	partcounter=1;
+
+	while (x<100 && x>-100){
+
+		if (partcounter==1){
+					ar.push([x,x])
+					x++;
+					ar.push([x,-x])
+		}
+		if (partcounter==2){
+					ar.push([x,-x])
+					x++;
+					ar.push([-x,-x])
+		}
+		if (partcounter==3){
+					ar.push([-x,-x])
+					x++;
+					ar.push([-x,x])
+		}
+		if (partcounter==4){
+					ar.push([-x,x])
+					x++;
+					ar.push([x,x])
+					partcounter=0;
+		}
+
+
+
+
+
+
+		partcounter++;
+
+	}
+
+	for (x in ar){
+		console.log(ar[x][0],ar[x][1])
+		click(ar[x][0],ar[x][1]);
+	}
+
+	wait(3);
+	window.border=null;
+	drawborder();
+
+}
+
