@@ -1,348 +1,80 @@
 <!DOCTYPE html>
-<html>
 <head>
-    <title>Pixelate!</title>
-    <style>
-        canvas {
-            width: 400px;
-        }
+	<!-- meta information, title, stylesheet, and icon -->
+	<title>Maze solver</title>
+	<meta name="description" content="Scan and solve mazes!">
+	<meta name="author" content="Noah Ostle">
+	<link rel="stylesheet" href="style.css">
+	<link rel="icon" href="mazeIcon.png">
 
-        #colorList {
-            list-style: none;
-            padding: 0;
-        }
-
-        .colorSquare {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            margin: 5px;
-            cursor: pointer;
-        }
-        #modal {
-            display:none;
-
-        }
-        #modal * {
-            position:absolute;
-            animation: modal 14s ease-in-out infinite;
-            z-index: 2;
-        }
-
-        body {
-            width:100%;
-            overflow: hidden;
-            background-color: #080414;
-            background-image: url("bkg.gif");
-            background-size: cover;
-        }
-
-        .title{
-            image-rendering: pixelated;
-            width:50%;
-
-            animation: MoveUpDown 8s ease-in-out infinite;
-            position: absolute;
-            left: 0;
-            bottom: 0;
-        }
-
-        @keyframes MoveUpDown {
-            0%, 100% {
-                transform: TranslateY(0);
-            }
-
-            50% {
-                transform: TranslateY(-50px);
-          }
-        }
-
-        @keyframes modal {
-            0%, 100% {
-                transform: TranslateY(0);
-            }
-
-            50% {
-                transform: TranslateY(-25px);
-          }
-        }
-
-
-        .in{
-            animation: transition .15s ease-in-out forwards;
-        }
-        .out{
-            animation: transitionOut .15s ease-in-out forwards;
-        }
-
-        @keyframes transition {
-            0% {opacity: 0%}
-            100% {opacity:100%}
-        }
-        @keyframes transitionOut {
-            0% {opacity: 100%}
-            100% {opacity:0%}
-        }
-
-
-        .upload-image{
-            image-rendering: pixelated;
-            width:20%;
-
-            animation: MoveUpDown 8s ease-in-out infinite;
-            animation-delay: 1000ms;
-            position: absolute;
-            left: 0;
-            bottom: 0;
-        }
-
-        .upload-image:hover{
-            cursor:pointer;
-        }
-
-         .cloud{
-            pointer-events: none;
-            image-rendering: pixelated;
-            width:7%;
-
-            animation: MoveUpDown 8s ease-in-out infinite;
-            animation-delay: 1250ms;
-            position: absolute;
-            left: 5.5%;
-            bottom: 55px;
-        }
-
-        #menu{
-            width:100%;
-            height:100%;
-            position:absolute;
-            top:-15%;
-            left:27%;
-        }
-
-        .modalbkg{
-            width:70%;
-            position:absolute;
-            left:15%;
-            z-index:1 !important;
-        }
-
-        .holder {
-            width: 28.85%;
-            height:400px;
-            position:absolute;
-            left:34%;
-            top:160px;
-        }
-
-        .canvas {
-            object-fit: contain;
-            object-position: 50% 50%;
-              max-width:100%;
-              max-height:100%;
-              display:block;
-              position:absolute;
-              left:0;
-              right:0;
-              bottom:0;
-              top:0;
-              margin:auto;
-              /*i have no idea how this works, i hate css so much*/
-            animation:none !important;
-
-        }
-        
-
-    </style>
 </head>
-<body> 
-    <div id="menu">
-        <img src="title.png" class="title">
 
-        <input style="display:none" type="file" id="imageInput" accept="image/*">
-
-        <img src="upload.png" alt="Upload" onclick="document.getElementById('imageInput').click();" class="upload-image">
-
-        <img src="cloud.png" class="cloud">
-    </div>
-
-    <div id="modal">
-        <img src="modal.png" class="modalbkg">
-        <div class="holder">
-            <canvas id="originalCanvas" class="canvas"></canvas>
-            <canvas  id="compressedCanvas" class="canvas"></canvas>
-        </div>
-        <input type="number" id="desiredWidth" placeholder="Desired Width" min="1" oninput="clearHeight()">
-        <input type="number" id="desiredHeight" placeholder="Desired Height" min="1" oninput="clearWidth()">
-        <input type="color" id="colorPicker">
-        <button id="addColorButton">Add</button>
-        <ul id="colorList"></ul>
-        <button  id="compressButton">Compress!</button>
-
-    </div>
-    <script>
-        const colors = [];
-        let img = new Image();
-        let originalCanvas = document.getElementById('originalCanvas');
-        let originalCtx = originalCanvas.getContext('2d');
-        let modal = document.getElementById("modal");
-        let menu = document.getElementById("menu");
-
-        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
-        document.getElementById('compressButton').addEventListener('click', pixelateImage);
-        document.getElementById('addColorButton').addEventListener('click', addColor);
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                img.onload = function() {
-                    originalCanvas.width = img.width;
-                    originalCanvas.height = img.height;
-                    originalCtx.drawImage(img, 0, 0);
-                };
-                img.src = e.target.result;
-            };
-
-            reader.readAsDataURL(file);
-
-            openModal();
-        }
-
-        function openModal(){
-            menu.classList.add("out");
-            modal.style.display="initial";
-            modal.classList.add("in");
-        }
-
-        function clearWidth() {
-            document.getElementById('desiredWidth').value = '';
-        }
-
-        function clearHeight() {
-            document.getElementById('desiredHeight').value = '';
-        }
-
-        function addColor() {
-            const colorPicker = document.getElementById('colorPicker');
-            const color = colorPicker.value;
-            colors.push(color);
-            renderColorList();
-        }
-
-        function removeColor(index) {
-            colors.splice(index, 1);
-            renderColorList();
-        }
-
-        function renderColorList() {
-            const colorList = document.getElementById('colorList');
-            colorList.innerHTML = '';
-            colors.forEach((color, index) => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('colorSquare');
-                listItem.style.backgroundColor = color;
-                listItem.onclick = () => removeColor(index);
-                colorList.appendChild(listItem);
-            });
-        }
-
-        function pixelateImage() {
-            const desiredWidth = parseInt(document.getElementById('desiredWidth').value);
-            const desiredHeight = parseInt(document.getElementById('desiredHeight').value);
-
-            if (isNaN(desiredWidth) && isNaN(desiredHeight)) {
-                alert("Please enter a valid desired width or height greater than 0.");
-                return;
-            }
-
-            let scaleFactor;
-            if (!isNaN(desiredWidth)) {
-                scaleFactor = img.width / desiredWidth;
-            } else if (!isNaN(desiredHeight)) {
-                scaleFactor = img.height / desiredHeight;
-            }
-
-            const newWidth = Math.floor(img.width / scaleFactor);
-            const newHeight = Math.floor(img.height / scaleFactor);
-
-            const imageData = originalCtx.getImageData(0, 0, img.width, img.height);
-            const pixels = imageData.data;
-
-            const compressedCanvas = document.getElementById('compressedCanvas');
-            const compressedCtx = compressedCanvas.getContext('2d');
-            compressedCanvas.width = img.width;
-            compressedCanvas.height = img.height;
-
-            for (let y = 0; y < newHeight; y++) {
-                for (let x = 0; x < newWidth; x++) {
-                    let r = 0, g = 0, b = 0, a = 0;
-                    let count = 0;
-
-                    for (let ky = 0; ky < scaleFactor; ky++) {
-                        for (let kx = 0; kx < scaleFactor; kx++) {
-                            const originalX = Math.floor(x * scaleFactor + kx);
-                            const originalY = Math.floor(y * scaleFactor + ky);
-                            if (originalX < img.width && originalY < img.height) {
-                                const index = (originalY * img.width + originalX) * 4;
-                                r += pixels[index];
-                                g += pixels[index + 1];
-                                b += pixels[index + 2];
-                                a += pixels[index + 3];
-                                count++;
-                            }
-                        }
-                    }
-
-                    r = r / count;
-                    g = g / count;
-                    b = b / count;
-                    a = a / count;
+<body>
+	<div class="notchholder">
+		<div class="circle"></div>
+		<div class="notch">
+			<!-- lets user upload file, only accepts png or jpg, upload thing hidden -->
+			<input type="file" id="userimage" oninput="imageConvert(event)" accept="image/x-png,image/png,image/jpeg" style="display:none;">
+			<!-- button for upload -->
+			<label id="label" for="userimage">+</label>
+			<button id="tutorial" onclick="tutorial()">?</button>
+		</div>
+		<div class="circle"></div>
+	</div>
+	<div class="text">
+		<h1 class="heading">Maze Solver</h1>
+		<p class="paragraph">Maze Solver is an open source and free<br>	program that can scan mazes and solve them for you!</p>
+	</div>
+	<img src="mazeIcon.png" class="mazeIcon">
+	<img src="cog.png" class="spincog">
 
 
-                    // Find the closest color
-                    if (colors.length==0){
-                        compressedCtx.fillStyle = `rgba(${r},${g},${b},${a / 255})`;
-                        compressedCtx.fillRect(x * scaleFactor, y * scaleFactor, Math.ceil(scaleFactor), Math.ceil(scaleFactor));
-                    } else {
-                        const closestColor = findClosestColor(r, g, b);
-                        // Draw the closest color
-                        compressedCtx.fillStyle = closestColor;
-                        compressedCtx.fillRect(x * scaleFactor, y * scaleFactor, Math.ceil(scaleFactor), Math.ceil(scaleFactor));
-                    }
-                }
-            }
-        }
+	<!--text that help wizard uses, it replaces text and moves the box around during the tutorial-->
+	<p id="tuttext" class="btooltip tut" style="opacity:0;">placeholder</p>
 
-        function findClosestColor(r, g, b) {
-            let minDistance = Infinity;
-            let closestColor = '#FFFFFF'; // Default to white if no colors are selected
+	<div id="popup" style="display:none;">
+	<h2 id="instruction">Enter a start point</h2>
+	<p id="error" style="opacity:0%;">Please enter a start/end point not on a maze wall.</p>
+	<!-- initialise canvas to draw maze on -->
+	<canvas id="userCanvas" width="0" height="0" class="canvas"></canvas>
+	<p id="closepopup" onclick="closePopup()">x</p>
 
-            colors.forEach(color => {
-                const colorRgb = hexToRgb(color);
-                const distance = Math.sqrt(Math.pow(r - colorRgb.r, 2) + Math.pow(g - colorRgb.g, 2) + Math.pow(b - colorRgb.b, 2));
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestColor = color;
-                }
-            });
+	<!--drawing tool-->
+	<button id="btoggle" onclick="borderToolToggle()" class="borderTool" style="display:inline-block;filter: grayscale(100%);">✏️</button>
+	<button id="bundo" onclick="undoborder()" class="borderTool undo" style="display:inline-block; filter:grayscale(100%);">↩️</button>
+	<button id="onlinehelp" onclick="togglepopup()" class="borderTool popup" style="display:inline-block;">❓</button>
+	<div id="print" style="opacity:0;">
+		<button id="exportsolution" onclick="exportsolution()" class="borderTool export">📤</button>
+		<!--<select name="filetype" id="filetype" class="filetype">
+			<option value="png">Png</option>
+			<option value="jpg">Jpg</option>
+		</select>-->
+	</div>
+	<div id="btooltip" class="btooltip" style="opacity:0;">
+	<p>Draw extra maze walls (may help if the entrance to your maze is open and there is a blank border around your picture).</p></div>
 
-            return closestColor;
-        }
+	<div class="buttons">
 
-        function hexToRgb(hex) {
-            // Remove leading # and convert to base 16
-            hex = hex.replace(/^#/, '');
-            const bigint = parseInt(hex, 16);
+		<!-- hidden by default, confirms user startpoint -->
+		<button id="startpointbutton" onclick="getStartPoint()" disabled="true" style="display:inline-block;filter: grayscale(100%);">✅</button>
+		<!-- hidden by default, confirms user endpoint -->
+		<button id="endpointbutton" onclick="getEndPoint()" disabled="true" style="display:none;filter: grayscale(100%);">✅</button>
+	</div>
 
-            // Extract RGB components
-            const r = (bigint >> 16) & 255;
-            const g = (bigint >> 8) & 255;
-            const b = bigint & 255;
+		<div id="yesno" style="opacity:0; display:none;">
+			<p id="question">Did we solve your maze correctly?</p>
+			<button id="yes" onclick="closePopup()" class="borderTool">✅</button>
+			<button id="no" onclick="bordertoolprompt()" class="borderTool">❌</button>
+		</div>
 
-            return { r, g, b };
-        }
-    </script>
+	
+	<div id="loadGrey" class="grey" style="display:none;"><p id="load"class="load">Loading...</p></div>
+	</div>
+
+
+
+	<div id="grey" class="grey" style="display:none;"></div>
+	<script src="script.js"></script>
+	<script src="tutorial.js"></script>
 </body>
 </html>
